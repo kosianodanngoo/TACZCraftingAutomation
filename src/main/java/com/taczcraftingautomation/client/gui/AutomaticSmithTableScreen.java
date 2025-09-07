@@ -37,8 +37,14 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
     }
 
     @Override
+    public void render(GuiGraphics graphics, int i, int i1, float v) {
+        this.renderBackground(graphics);
+        super.render(graphics, i, i1, v);
+        this.renderTooltip(graphics, i, i1);
+    }
+
+    @Override
     public void init(){
         super.init();
-
     }
 }
