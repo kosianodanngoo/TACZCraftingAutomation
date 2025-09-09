@@ -1,5 +1,5 @@
 {
   "gui.tacz_crafting_automation.auto_smith_table.toggle_auto_push" : "Toggle Auto Push",
   "gui.tacz_crafting_automation.auto_smith_table.memorize" : "Memorize Item Layout in Input ",
-  "gui.tacz_crafting_automation.auto_smith_table.forget" : ""
+  "gui.tacz_crafting_automation.auto_smith_table.forget" : "Forget Item Layout in Input"
 }
