@@ -20,7 +20,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -38,7 +40,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +71,15 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
 
     private List<GunSmithTableRecipe> cashedRecipes;
 
+    public boolean autoPush = false;
+    private ItemStackHandler itemLayout = new ItemStackHandler(INPUT_SLOTS) {
+        @Override
+        protected void onContentsChanged(int slot){
+            setChanged();
+            super.onContentsChanged(slot);
+        }
+    };
+
     private final NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(items) {
@@ -73,6 +87,12 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (INPUT_SLOTS <= slot  && slot <= TABLE_INDEX) {
                 return false;
+            }
+            if (slot < INPUT_SLOTS) {
+                ItemStack stack1 = itemLayout.getStackInSlot(slot);
+                if(!stack1.isEmpty() && !ItemStack.isSameItem(stack, stack1)) {
+                    return false;
+                }
             }
             return super.isItemValid(slot, stack);
         }
@@ -97,6 +117,12 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (INPUT_SLOTS <= slot  && slot < TABLE_INDEX) {
                 return false;
+            }
+            if (slot < INPUT_SLOTS) {
+                ItemStack stack1 = itemLayout.getStackInSlot(slot);
+                if(!stack1.isEmpty() && !ItemStack.isSameItem(stack, stack1)) {
+                    return false;
+                }
             }
             return super.isItemValid(slot, stack);
         }
@@ -126,6 +152,7 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
                 return switch (pIndex){
                     case 0 -> AutomaticSmithTableBlockEntity.this.energyStorage.getEnergyStored();
                     case 1 -> AutomaticSmithTableBlockEntity.this.energyStorage.getMaxEnergyStored();
+                    case 2 -> AutomaticSmithTableBlockEntity.this.getAutoPush() ? 1 : 0;
                     default -> 0;
                 };
             }
@@ -136,7 +163,7 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
 
             @Override
             public int getCount() {
-                return 2;
+                return 3;
             }
         };
     }
@@ -180,8 +207,32 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
                     break;
                 }
             }
-
+            if(getAutoPush()) {
+                Direction direction = getBlockState().getValue(AutomaticSmithTableBlock.FACING);
+                pushItem(direction);
+            }
         }
+    }
+
+    private void pushItem(Direction direction) {
+        IItemHandler toOut = getInventoryWithDiretion(direction);
+        for (int slotIndex = OUTPUT_INDEX ; slotIndex < OUTPUT_SLOTS + OUTPUT_INDEX; slotIndex++) {
+            ItemStack stackInSlot = internalItemHandler.extractItem(slotIndex, internalItemHandler.getStackInSlot(slotIndex).getCount(), true);
+            if (!stackInSlot.isEmpty()) {
+                ItemStack stack = ItemHandlerHelper.insertItem(toOut, stackInSlot, false);
+                internalItemHandler.extractItem(slotIndex, stackInSlot.getCount() - stack.getCount(), false);
+                break;
+            }
+        }
+    }
+
+    private IItemHandler getInventoryWithDiretion(Direction direction) {
+        BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(direction));
+        if (blockEntity != null) {
+            return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).orElse(EmptyHandler.INSTANCE);
+        }
+
+        return EmptyHandler.INSTANCE;
     }
 
     public boolean doCraft(GunSmithTableRecipe recipe, boolean simulate) {
@@ -287,10 +338,36 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         cashedRecipes = null;
     }
 
+    public boolean getAutoPush() {
+        return autoPush;
+    }
+
+    public void setAutoPush(boolean flag) {
+        autoPush = flag;
+    }
+
+    public ItemStackHandler getItemLayout() {
+        return itemLayout;
+    }
+
+    public void forgetItemLayout() {
+        for(int itemIndex = 0 ; itemIndex < itemLayout.getSlots() ; itemIndex++) {
+            itemLayout.setStackInSlot(itemIndex, ItemStack.EMPTY);
+        }
+    }
+
+    public void memorizeItemLayout() {
+        for(int itemIndex = 0 ; itemIndex < itemLayout.getSlots() ; itemIndex++) {
+            itemLayout.insertItem(itemIndex, internalItemHandler.getStackInSlot(itemIndex), false);
+        }
+    }
+
     @Override
     protected void saveAdditional(CompoundTag pTag) {
         pTag.put("inventory", internalItemHandler.serializeNBT());
         pTag.put("energy", energyStorage.serializeNBT());
+        pTag.put("itemLayout", itemLayout.serializeNBT());
+        pTag.putBoolean("autoPush", getAutoPush());
         super.saveAdditional(pTag);
     }
 
@@ -303,10 +380,36 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         for(int slotIndex = 0 ; slotIndex < internalItemHandler.getSlots() ; slotIndex++) {
             internalItemHandler.setStackInSlot(slotIndex, loadedInventory.getStackInSlot(slotIndex));
         }
+        itemLayout.deserializeNBT(pTag.getCompound("itemLayout"));
+        setAutoPush(pTag.getBoolean("autoPush"));
+    }
+
+    @Nullable
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        CompoundTag nbtTag = new CompoundTag();
+        this.saveClientDataToNBT(nbtTag);
+        return ClientboundBlockEntityDataPacket.create(this, (BlockEntity entity) -> {return nbtTag;});
     }
 
     @Override
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
+        loadClientDataFromNBT(packet.getTag());
+    }
+
+
+    @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag updateTag = super.getUpdateTag();
+        saveClientDataToNBT(updateTag);
+        return updateTag;
+    }
+
+    public void saveClientDataToNBT(CompoundTag pTag) {
+        saveAdditional(pTag);
+    }
+
+    public void loadClientDataFromNBT(CompoundTag pTag) {
+        load(pTag);
     }
 }

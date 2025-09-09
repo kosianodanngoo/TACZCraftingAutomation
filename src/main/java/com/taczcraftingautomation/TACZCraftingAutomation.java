@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.taczcraftingautomation.init.ModBlocks;
 import com.taczcraftingautomation.init.ModContainer;
 import com.taczcraftingautomation.init.ModItems;
+import com.taczcraftingautomation.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -46,6 +47,7 @@ public class TACZCraftingAutomation {
         ModBlocks.TILE_ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModContainer.CONTAINER_TYPE.register(modEventBus);
+        NetworkHandler.init();
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

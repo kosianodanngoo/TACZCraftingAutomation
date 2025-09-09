@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class AutomaticSmithTableMenu extends AbstractContainerMenu {
@@ -40,13 +41,13 @@ public class AutomaticSmithTableMenu extends AbstractContainerMenu {
     }
 
 
-    private static final int PLAYER_HOTBAR_SLOTS = 9;
-    private static final int PLAYER_INVENTORY_ROWS = 3;
-    private static final int PLAYER_INVENTORY_COLUMNS = 9;
-    private static final int PLAYER_INVENTORY_SLOTS = PLAYER_INVENTORY_COLUMNS * PLAYER_INVENTORY_ROWS;
-    private static final int PLAYER_SLOTS = PLAYER_HOTBAR_SLOTS + PLAYER_INVENTORY_SLOTS;
-    private static final int INPUT_COLUMNS = 6;
-    private static final int OUTPUT_COLUMNS = 1;
+    public static final int PLAYER_HOTBAR_SLOTS = 9;
+    public static final int PLAYER_INVENTORY_ROWS = 3;
+    public static final int PLAYER_INVENTORY_COLUMNS = 9;
+    public static final int PLAYER_INVENTORY_SLOTS = PLAYER_INVENTORY_COLUMNS * PLAYER_INVENTORY_ROWS;
+    public static final int PLAYER_SLOTS = PLAYER_HOTBAR_SLOTS + PLAYER_INVENTORY_SLOTS;
+    public static final int INPUT_COLUMNS = 6;
+    public static final int OUTPUT_COLUMNS = 1;
 
     @Override
     public ItemStack quickMoveStack(Player player, int i) {
@@ -166,6 +167,14 @@ public class AutomaticSmithTableMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return player.isAlive();
+    }
+
+    public ItemStackHandler getItemLayout() {
+        return blockEntity.getItemLayout();
+    }
+
+    public boolean getAutoPush() {
+        return data.get(2) == 1;
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
