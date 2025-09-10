@@ -1,6 +1,5 @@
 package com.taczcraftingautomation.block.entity;
 
-import com.mojang.logging.LogUtils;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.config.sync.SyncConfig;
@@ -11,7 +10,6 @@ import com.tacz.guns.item.GunSmithTableItem;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.taczcraftingautomation.ModConfig;
-import com.taczcraftingautomation.TACZCraftingAutomation;
 import com.taczcraftingautomation.block.AutomaticSmithTableBlock;
 import com.taczcraftingautomation.init.ModBlocks;
 import com.taczcraftingautomation.inventory.AutomaticSmithTableMenu;
@@ -48,7 +46,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuProvider {
     public static final BlockEntityType<AutomaticSmithTableBlockEntity> TYPE = BlockEntityType.Builder.of(AutomaticSmithTableBlockEntity::new,
@@ -354,26 +351,39 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         for(int itemIndex = 0 ; itemIndex < itemLayout.getSlots() ; itemIndex++) {
             itemLayout.setStackInSlot(itemIndex, ItemStack.EMPTY);
         }
+        setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
+        }
     }
 
     public void memorizeItemLayout() {
         for(int itemIndex = 0 ; itemIndex < itemLayout.getSlots() ; itemIndex++) {
-            itemLayout.insertItem(itemIndex, internalItemHandler.getStackInSlot(itemIndex), false);
+            ItemStack stack = internalItemHandler.getStackInSlot(itemIndex).copy();
+            if(!stack.isEmpty()) {
+                stack.setCount(1);
+                itemLayout.setStackInSlot(itemIndex, stack);
+            }
+        }
+        setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
 
     @Override
     protected void saveAdditional(CompoundTag pTag) {
-        pTag.put("inventory", internalItemHandler.serializeNBT());
-        pTag.put("energy", energyStorage.serializeNBT());
-        pTag.put("itemLayout", itemLayout.serializeNBT());
-        pTag.putBoolean("autoPush", getAutoPush());
+        saveData(pTag);
         super.saveAdditional(pTag);
     }
 
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
+        loadData(pTag);
+    }
+
+    void loadData(CompoundTag pTag) {
         energyStorage.deserializeNBT(pTag.get("energy"));
         ItemStackHandler loadedInventory = new ItemStackHandler(CONTAINER_SIZE);
         loadedInventory.deserializeNBT(pTag.getCompound("inventory"));
@@ -384,32 +394,35 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
         setAutoPush(pTag.getBoolean("autoPush"));
     }
 
+    void saveData(CompoundTag pTag) {
+        pTag.put("inventory", internalItemHandler.serializeNBT());
+        pTag.put("energy", energyStorage.serializeNBT());
+        pTag.put("itemLayout", itemLayout.serializeNBT());
+        pTag.putBoolean("autoPush", getAutoPush());
+    }
+
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        CompoundTag nbtTag = new CompoundTag();
-        this.saveClientDataToNBT(nbtTag);
-        return ClientboundBlockEntityDataPacket.create(this, (BlockEntity entity) -> {return nbtTag;});
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
-        loadClientDataFromNBT(packet.getTag());
+        load(packet.getTag());
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag pTag) {
+        super.handleUpdateTag(pTag);
+        loadData(pTag);
     }
 
 
     @Override
     public CompoundTag getUpdateTag() {
-        CompoundTag updateTag = super.getUpdateTag();
-        saveClientDataToNBT(updateTag);
-        return updateTag;
-    }
-
-    public void saveClientDataToNBT(CompoundTag pTag) {
-        saveAdditional(pTag);
-    }
-
-    public void loadClientDataFromNBT(CompoundTag pTag) {
-        load(pTag);
+        CompoundTag tag = super.getUpdateTag();
+        saveData(tag);
+        return tag;
     }
 }

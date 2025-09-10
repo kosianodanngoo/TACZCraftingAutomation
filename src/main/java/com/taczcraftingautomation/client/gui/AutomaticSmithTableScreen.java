@@ -68,17 +68,23 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
         GlStateManager._enableDepthTest();
         GlStateManager._disableBlend();
 
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1f, 1f, 1f, 0.25f);
+
         for (int indexSlot = 0; indexSlot < itemLayout.getSlots(); indexSlot++) {
             ItemStack stack = itemLayout.getStackInSlot(indexSlot);
             if (!stack.isEmpty()) {
-                Slot slot = menu.getSlot(AutomaticSmithTableMenu.PLAYER_INVENTORY_SLOTS + indexSlot);
+                Slot slot = menu.getSlot(AutomaticSmithTableMenu.PLAYER_SLOTS + indexSlot);
                 if (!slot.hasItem()) {
                     graphics.renderItem(stack, slot.x, slot.y, slot.x * slot.y * 31);
                     graphics.renderItemDecorations(Minecraft.getInstance().font, stack, slot.x, slot.y, null);
                 }
             }
-
         }
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.disableBlend();
 
         matrixStack.popPose();
     }
@@ -90,8 +96,8 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
         super.init();
 
         addRenderableWidget(autoPushButton = new AutoPushButton(x + 152, y + 36));
-        addRenderableWidget(memorizeButton = new MemorizeButton(x + 26, y + 36));
-        addRenderableWidget(forgetButton = new ForgetButton(x + 44, y + 36));
+        addRenderableWidget(memorizeButton = new MemorizeButton(x + 8, y + 36));
+        addRenderableWidget(forgetButton = new ForgetButton(x + 26, y + 36));
 
         autoPushButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.auto_smith_table.toggle_auto_push")));
         memorizeButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.auto_smith_table.memorize")));
