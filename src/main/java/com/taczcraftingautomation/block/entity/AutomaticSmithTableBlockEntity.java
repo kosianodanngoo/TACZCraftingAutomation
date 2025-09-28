@@ -204,10 +204,10 @@ public class AutomaticSmithTableBlockEntity extends BlockEntity implements MenuP
                     break;
                 }
             }
-            if(getAutoPush()) {
-                Direction direction = getBlockState().getValue(AutomaticSmithTableBlock.FACING);
-                pushItem(direction);
-            }
+        }
+        if(getAutoPush()) {
+            Direction direction = getBlockState().getValue(AutomaticSmithTableBlock.FACING);
+            pushItem(direction);
         }
     }
 

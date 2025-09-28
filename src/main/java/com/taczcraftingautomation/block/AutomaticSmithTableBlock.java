@@ -73,7 +73,7 @@ public class AutomaticSmithTableBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getNearestLookingDirection().getOpposite();
+        Direction direction = context.getNearestLookingDirection();
         return this.defaultBlockState().setValue(FACING, direction);
     }
 
