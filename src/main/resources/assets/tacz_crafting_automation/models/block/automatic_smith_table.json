@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "tacz_crafting_automation:block/automatic_smith_table_bottom",
+    "east": "tacz_crafting_automation:block/automatic_smith_table_side",
+    "north": "tacz_crafting_automation:block/automatic_smith_table_front",
+    "particle": "tacz_crafting_automation:block/automatic_smith_table_front",
+    "south": "tacz_crafting_automation:block/automatic_smith_table_side",
+    "up": "tacz_crafting_automation:block/automatic_smith_table_top",
+    "west": "tacz_crafting_automation:block/automatic_smith_table_front"
+  }
+}

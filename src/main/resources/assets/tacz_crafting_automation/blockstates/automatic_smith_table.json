@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "tacz_crafting_automation:block/automatic_smith_table"
+    },
+    "facing=up": {
+      "model": "tacz_crafting_automation:block/automatic_smith_table",
+      "x": 180
+    },
+    "facing=north":  {
+      "model": "tacz_crafting_automation:block/automatic_smith_table",
+      "x": 90
+    },
+    "facing=east":   {
+      "model": "tacz_crafting_automation:block/automatic_smith_table",
+      "x": 90,
+      "y": 90
+    },
+    "facing=south":   {
+      "model": "tacz_crafting_automation:block/automatic_smith_table",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tacz_crafting_automation:block/automatic_smith_table",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
