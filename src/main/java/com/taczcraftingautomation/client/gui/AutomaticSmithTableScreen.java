@@ -99,9 +99,9 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
         addRenderableWidget(memorizeButton = new MemorizeButton(x + 8, y + 36));
         addRenderableWidget(forgetButton = new ForgetButton(x + 26, y + 36));
 
-        autoPushButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.auto_smith_table.toggle_auto_push")));
-        memorizeButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.auto_smith_table.memorize")));
-        forgetButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.auto_smith_table.forget")));
+        autoPushButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.automatic_smith_table.toggle_auto_push")));
+        memorizeButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.automatic_smith_table.memorize")));
+        forgetButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.automatic_smith_table.forget")));
     }
 
     private class AutoPushButton extends SlotSizeButton {

@@ -1,5 +1,7 @@
 {
-  "gui.tacz_crafting_automation.auto_smith_table.toggle_auto_push" : "自動搬出を切り替える",
-  "gui.tacz_crafting_automation.auto_smith_table.memorize" : "搬入スロットのアイテムを記憶する",
-  "gui.tacz_crafting_automation.auto_smith_table.forget" : "搬入スロットのアイテムを忘却する"
+  "block.tacz_crafting_automation.automatic_smith_table": "自動スミステーブル",
+
+  "gui.tacz_crafting_automation.automatic_smith_table.toggle_auto_push" : "自動搬出を切り替える",
+  "gui.tacz_crafting_automation.automatic_smith_table.memorize" : "搬入スロットのアイテムを記憶する",
+  "gui.tacz_crafting_automation.automatic_smith_table.forget" : "搬入スロットのアイテムを忘却する"
 }
