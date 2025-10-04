@@ -3,5 +3,8 @@
 
   "gui.tacz_crafting_automation.automatic_smith_table.toggle_auto_push" : "Toggle Auto Push",
   "gui.tacz_crafting_automation.automatic_smith_table.memorize" : "Memorize Item Layout in Input ",
-  "gui.tacz_crafting_automation.automatic_smith_table.forget" : "Forget Item Layout in Input"
+  "gui.tacz_crafting_automation.automatic_smith_table.forget" : "Forget Item Layout in Input",
+
+  "gui.tacz_crafting_automation.energy_bar" : "Energy: %dFE / %dFE",
+  "gui.narrate.tacz_crafting_automation.energy_bar" : "Energy: %dFE / %dFE"
 }

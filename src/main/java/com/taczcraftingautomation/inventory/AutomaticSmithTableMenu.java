@@ -185,11 +185,12 @@ public class AutomaticSmithTableMenu extends AbstractContainerMenu {
         }
     }
 
-    public float getEnergyPercentage() {
-        float currentEnergy = (float) data.get(0);
-        float maxEnergy = (float) data.get(1);
+    public int getCurrentEnergy() {
+        return data.get(0);
+    }
 
-        return maxEnergy == 0 ? 0 : Mth.clamp(currentEnergy/maxEnergy, 0.0f, 1.0f);
+    public int getMaxEnergy() {
+        return data.get(1);
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {

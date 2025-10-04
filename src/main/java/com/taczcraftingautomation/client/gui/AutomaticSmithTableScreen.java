@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.taczcraftingautomation.TACZCraftingAutomation;
+import com.taczcraftingautomation.client.gui.widget.EnergyBarWidget;
 import com.taczcraftingautomation.client.gui.widget.SlotSizeButton;
 import com.taczcraftingautomation.inventory.AutomaticSmithTableMenu;
 import com.taczcraftingautomation.network.NetworkHandler;
@@ -30,6 +31,7 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
     private AutoPushButton autoPushButton;
     private MemorizeButton memorizeButton;
     private ForgetButton forgetButton;
+    private EnergyBarWidget energyBar;
 
     public AutomaticSmithTableScreen(AutomaticSmithTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -47,7 +49,6 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
 
         guiGraphics.blit(TEXTURE,x,y,0,0,this.imageWidth,this.imageHeight,this.imageWidth,this.imageHeight);
 
-        guiGraphics.fill(x + 118, y + 106 - Math.round(52 * menu.getEnergyPercentage()), x + 120, y + 106, 0xFFFF0000);
         renderItemLayout(guiGraphics);
     }
 
@@ -98,6 +99,7 @@ public class AutomaticSmithTableScreen extends AbstractContainerScreen<Automatic
         addRenderableWidget(autoPushButton = new AutoPushButton(x + 152, y + 36));
         addRenderableWidget(memorizeButton = new MemorizeButton(x + 8, y + 36));
         addRenderableWidget(forgetButton = new ForgetButton(x + 26, y + 36));
+        addRenderableWidget(energyBar = new EnergyBarWidget(x + 118, y + 54, 2, 52, Component.empty(), menu::getCurrentEnergy, menu::getMaxEnergy));
 
         autoPushButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.automatic_smith_table.toggle_auto_push")));
         memorizeButton.setTooltip(Tooltip.create(Component.translatable("gui.tacz_crafting_automation.automatic_smith_table.memorize")));
