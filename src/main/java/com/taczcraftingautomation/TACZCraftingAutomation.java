@@ -1,6 +1,7 @@
 package com.taczcraftingautomation;
 
 import com.mojang.logging.LogUtils;
+import com.tacz.guns.init.ModCreativeTabs;
 import com.taczcraftingautomation.init.ModBlocks;
 import com.taczcraftingautomation.init.ModContainer;
 import com.taczcraftingautomation.init.ModItems;
@@ -49,10 +50,18 @@ public class TACZCraftingAutomation {
         ModContainer.CONTAINER_TYPE.register(modEventBus);
         NetworkHandler.init();
 
+        modEventBus.addListener(this::buildContents);
+
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, ModConfig.SPEC);
+    }
+
+    public void buildContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == ModCreativeTabs.OTHER_TAB.getKey()) {
+            event.accept(ModBlocks.AUTOMATIC_SMITH_TABLE);
+        }
     }
 }
