@@ -1,21 +1,17 @@
 package com.taczcraftingautomation.block;
 
-import com.tacz.guns.api.DefaultAssets;
 import com.taczcraftingautomation.block.entity.AutomaticSmithTableBlockEntity;
 import com.taczcraftingautomation.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -28,7 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-public class AutomaticSmithTableBlock extends BaseEntityBlock {
+public class AutomaticSmithTableBlock extends Block implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
 
     public AutomaticSmithTableBlock() {
@@ -85,7 +81,6 @@ public class AutomaticSmithTableBlock extends BaseEntityBlock {
             return null;
         }
 
-        return createTickerHelper(pBlockEntityType, ModBlocks.AUTOMATIC_SMITH_TABLE_BE.get(),
-                (pLevel1,pPos,pState1,pBlockEntity) -> pBlockEntity.tick(pLevel1,pPos,pState1));
+        return pBlockEntityType.equals(ModBlocks.AUTOMATIC_SMITH_TABLE.get()) ? (level, pos, state, tile) -> ((AutomaticSmithTableBlockEntity) tile).tick(level, pos, state) : null;
     }
 }

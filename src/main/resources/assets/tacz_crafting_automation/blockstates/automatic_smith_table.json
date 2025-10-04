@@ -9,22 +9,22 @@
     },
     "facing=north":  {
       "model": "tacz_crafting_automation:block/automatic_smith_table",
-      "x": 90
+      "x": 90,
+      "y": 180
     },
     "facing=east":   {
       "model": "tacz_crafting_automation:block/automatic_smith_table",
       "x": 90,
-      "y": 90
+      "y": 270
     },
     "facing=south":   {
       "model": "tacz_crafting_automation:block/automatic_smith_table",
-      "x": 90,
-      "y": 180
+      "x": 90
     },
     "facing=west": {
       "model": "tacz_crafting_automation:block/automatic_smith_table",
       "x": 90,
-      "y": 270
+      "y": 90
     }
   }
 }
